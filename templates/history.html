@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>分析历史 - MJ的AI助手</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        h1 { color: #59c3f7; }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0 15px 0;
+            flex-wrap: wrap;
+        }
+        .nav-item {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #444;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .nav-item.active {
+            background-color: #59c3f7;
+            font-weight: bold;
+        }
+        .nav-item:hover {
+            background-color: #666;
+        }
+        .nav-item.active:hover {
+            background-color: #59c3f7;
+        }
+        .history-list {
+            width: 90%;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .history-item {
+            background-color: #222;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .history-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .history-meta span {
+            color: #ccc;
+        }
+        .history-summary {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .history-result {
+            background-color: #111;
+            padding: 12px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .delete-form {
+            display: inline-block;
+        }
+        .delete-form button {
+            background-color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+    <h1>分析历史</h1>
+    <div class="navbar">
+        <a href="/" class="nav-item">AI聊天</a>
+        <a href="/jd" class="nav-item">岗位JD分析</a>
+        <a href="/resume" class="nav-item">简历上传分析</a>
+        <a href="/match" class="nav-item">简历JD匹配</a>
+        <a href="/history" class="nav-item active">分析历史</a>
+        <a href="/logout" class="nav-item">退出登录</a>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <span>欢迎, {{ username }}</span>
+    </div>
+    <hr>
+    <div class="history-list">
+        {% if records %}
+            {% for record in records %}
+            <div class="history-item">
+                <div class="history-meta">
+                    <span>类型：{{ record.analysis_type }}</span>
+                    <span>时间：{{ record.created_at }}</span>
+                    <form class="delete-form" method="POST" action="/history/delete">
+                        <input type="hidden" name="history_id" value="{{ record.id }}">
+                        <button type="submit">删除</button>
+                    </form>
+                </div>
+                <div class="history-summary">输入摘要：{{ record.input_summary }}</div>
+                <div class="history-result">{{ record.result }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="history-item">暂无分析历史。</div>
+        {% endif %}
+    </div>
+</body>
+</html>

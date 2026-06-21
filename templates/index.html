@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI求职助手平台</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        h1 { color: #59c3f7; margin-bottom: 4px; }
+        .hero-title {
+            font-size: 2rem;
+            margin: 0;
+        }
+        .hero-subtitle {
+            color: #b0cfff;
+            margin: 8px 0 24px;
+            font-size: 1rem;
+        }
+        .hero-card {
+            width: 90%;
+            max-width: 980px;
+            margin: 0 auto 30px;
+            background: rgba(34, 42, 65, 0.85);
+            border: 1px solid rgba(89, 195, 247, 0.25);
+            border-radius: 18px;
+            padding: 24px;
+            text-align: left;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+        }
+        .feature-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
+        }
+        .feature-item h3 {
+            margin: 0 0 8px;
+            color: #59c3f7;
+            font-size: 1rem;
+        }
+        .feature-item p {
+            margin: 0;
+            color: #d8e8ff;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .chat-box {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            text-align: left;
+        }
+        .user-msg {
+            background-color: #0066ff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+        .assistant-msg {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+        input[type=text] {
+            width: 70%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #59c3f7;
+            color: #fff;
+            cursor: pointer;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0 15px 0;
+            flex-wrap: wrap;
+        }
+        .nav-item {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #444;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .nav-item.active {
+            background-color: #59c3f7;
+            font-weight: bold;
+        }
+        .nav-item:hover {
+            background-color: #666;
+        }
+        .nav-item.active:hover {
+            background-color: #59c3f7;
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 980px; margin: 0 auto; padding: 24px 16px;">
+        <h1 class="hero-title">AI求职助手平台</h1>
+        <div class="hero-subtitle">基于大模型的求职分析与职业辅助平台。</div>
+        <div class="hero-card">
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h3>AI智能对话</h3>
+                    <p>实时对话式求职助手，支持问题解答与职业指导。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>岗位JD分析</h3>
+                    <p>自动解析岗位需求，提取核心技能与学习建议。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>简历上传分析</h3>
+                    <p>上传简历后生成整体评价、技术栈与优化建议。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>简历JD匹配</h3>
+                    <p>简历与JD匹配打分，指出核心技能差距与投递建议。</p>
+                </div>
+                <div class="feature-item">
+                    <h3>分析历史记录</h3>
+                    <p>保存个人分析历史，可随时查看与删除。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1>MJ AI助手</h1>
+    <div class="navbar">
+        <a href="/" class="nav-item active">AI聊天</a>
+        <a href="/jd" class="nav-item">岗位JD分析</a>
+        <a href="/resume" class="nav-item">简历上传分析</a>
+        <a href="/match" class="nav-item">简历JD匹配</a>
+        <a href="/history" class="nav-item">分析历史</a>
+        <a href="/logout" class="nav-item">退出登录</a>
+    </div>
+    <hr>
+
+    <div style="margin-bottom: 10px;">
+        <span>欢迎, {{ username }}</span>
+    </div>
+    <hr>
+
+   <div class="chat-box">
+
+    {% for msg in chat_history %}
+
+        <div class="user-msg">
+            你：{{ msg.user }}
+        </div>
+
+        <div class="assistant-msg">
+            MJ：{{ msg.bot }}
+        </div>
+
+    {% endfor %}
+
+</div>
+
+    <form method="POST">
+        <input type="text" name="user_input" placeholder="请输入内容" onkeydown="if (event.key === 'Enter') this.form.submit();">
+        <button type="submit">发送</button>
+    </form>
+    <form method="POST" action="/clear" style="display:inline-block; margin-left: 10px;">
+        <button type="submit">清空聊天记录</button>
+    </form>
+    <script>
+        window.addEventListener('load', function() {
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>

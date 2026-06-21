@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>注册 - MJ的AI助手</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        h1 { color: #59c3f7; }
+        form {
+            display: inline-block;
+            text-align: left;
+            margin-top: 40px;
+        }
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #59c3f7;
+            color: #fff;
+            cursor: pointer;
+        }
+        .message {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        .link {
+            color: #59c3f7;
+        }
+    </style>
+</head>
+<body>
+    <h1>注册 MJ AI助手</h1>
+    <div class="message">{{ error or '' }}</div>
+    <form method="POST">
+        <label>用户名</label>
+        <input type="text" name="username" placeholder="请输入用户名" required>
+        <label>密码</label>
+        <input type="password" name="password" placeholder="请输入密码" required>
+        <button type="submit">注册</button>
+    </form>
+    <div style="margin-top: 15px;">
+        已有账号？<a class="link" href="/login">登录</a>
+    </div>
+</body>
+</html>
