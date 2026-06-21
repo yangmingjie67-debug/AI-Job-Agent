@@ -44,15 +44,19 @@ ai-chat-app/
    ```bash
    cd ai-chat-app
    ```
-2. 激活 Python 虚拟环境：
+2. 安装依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. 激活 Python 虚拟环境：
    ```bash
    .\nenv\Scripts\Activate.ps1
    ```
-3. 运行 Flask 应用：
+4. 运行 Flask 应用：
    ```bash
    python app.py
    ```
-4. 在浏览器中访问：
+5. 在浏览器中访问：
    ```
    http://localhost:5000
    ```
@@ -62,19 +66,18 @@ ai-chat-app/
 如果没有安装依赖，可使用以下命令安装：
 
 ```bash
-pip install flask openai pypdf
+pip install -r requirements.txt
 ```
 
 ## 配置 DeepSeek API Key
 
-在 `app.py` 中找到 `OpenAI(...)` 初始化部分，替换 `api_key` 为你的 DeepSeek API Key：
+在项目根目录创建 `.env` 文件，并写入：
 
-```python
-client = OpenAI(
-    api_key="<你的 DeepSeek API Key>",
-    base_url="https://api.deepseek.com"
-)
+```text
+DEEPSEEK_API_KEY=<你的 DeepSeek API Key>
 ```
+
+应用会在启动时自动读取 `.env` 中的 `DEEPSEEK_API_KEY`。
 
 ## 项目截图
 
