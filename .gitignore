@@ -1,0 +1,9 @@
+venv/
+nenv/
+__pycache__/
+*.pyc
+mj_ai.db
+ngrok.exe
+.env
+uploads/
+.DS_Store

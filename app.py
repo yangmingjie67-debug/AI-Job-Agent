@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, render_template, redirect, session
 from openai import OpenAI
 from pypdf import PdfReader
@@ -7,7 +8,7 @@ app = Flask(__name__)
 app.secret_key = "replace-with-a-secret-key"
 
 client = OpenAI(
-    api_key="sk-8daa0f05d667416d8a13ea29b3919e7c",
+    api_key=os.environ.get("DEEPSEEK_API_KEY"),
     base_url="https://api.deepseek.com"
 )
 
