@@ -2,7 +2,10 @@ import os
 from flask import Flask, request, render_template, redirect, session
 from openai import OpenAI
 from pypdf import PdfReader
+from dotenv import load_dotenv
 import sqlite3
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "replace-with-a-secret-key"
