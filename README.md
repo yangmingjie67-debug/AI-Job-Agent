@@ -6,7 +6,13 @@
 
 ![首页](images/home.png)
 
+![聊天](images/chat.png)
+
 ![岗位分析](images/match.png)
+
+![历史记录](images/history.png)
+
+请将对应页面截图放入 `images` 目录。
 
 ## 功能介绍
 
