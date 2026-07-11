@@ -1,191 +1,200 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>AI求职助手平台</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Job Agent</title>
     <style>
+        :root {
+            --bg: #15181d;
+            --surface: #20252c;
+            --surface-soft: #262c34;
+            --border: #353d47;
+            --text: #f4f7fb;
+            --muted: #a9b2bf;
+            --blue: #59c3f7;
+            --blue-strong: #1677d2;
+        }
+        * { box-sizing: border-box; }
         body {
-            text-align: center;
-            background-color: #1a1a1a;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
-        h1 { color: #59c3f7; margin-bottom: 4px; }
-        .hero-title {
-            font-size: 2rem;
             margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, "Microsoft YaHei", sans-serif;
         }
-        .hero-subtitle {
-            color: #b0cfff;
-            margin: 8px 0 24px;
-            font-size: 1rem;
+        .page {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 48px;
         }
-        .hero-card {
-            width: 90%;
-            max-width: 980px;
-            margin: 0 auto 30px;
-            background: rgba(34, 42, 65, 0.85);
-            border: 1px solid rgba(89, 195, 247, 0.25);
-            border-radius: 18px;
-            padding: 24px;
-            text-align: left;
+        .hero { text-align: center; padding: 8px 0 26px; }
+        .hero h1 { margin: 0; color: var(--blue); font-size: 2.1rem; }
+        .hero p { margin: 9px 0 0; color: #c0c8d2; font-size: 0.98rem; }
+        .feature-panel {
+            padding: 22px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
         }
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 14px;
         }
         .feature-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
+            min-height: 126px;
             padding: 16px;
-            box-shadow: 0 0 0 1px rgba(255,255,255,0.02);
-        }
-        .feature-item h3 {
-            margin: 0 0 8px;
-            color: #59c3f7;
-            font-size: 1rem;
-        }
-        .feature-item p {
-            margin: 0;
-            color: #d8e8ff;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .chat-box {
-            width: 90%;
-            max-width: 800px;
-            margin: auto;
-            text-align: left;
-        }
-        .user-msg {
-            background-color: #0066ff;
-            color: #fff;
-            padding: 10px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            margin: 5px 0;
         }
-        .assistant-msg {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-        }
-        input[type=text] {
-            width: 70%;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-        }
-        button {
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: none;
-            background-color: #59c3f7;
-            color: #fff;
-            cursor: pointer;
-        }
+        .feature-item h3 { margin: 0 0 9px; color: var(--blue); font-size: 0.98rem; }
+        .feature-item p { margin: 0; color: var(--muted); line-height: 1.55; font-size: 0.9rem; }
+        .section-heading { margin: 34px 0 14px; }
+        .section-heading h2 { margin: 0; font-size: 1.35rem; }
+        .section-heading p { margin: 6px 0 0; color: var(--muted); }
         .navbar {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 10px 0 15px 0;
+            gap: 8px;
+            margin: 18px 0;
             flex-wrap: wrap;
         }
         .nav-item {
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: #444;
-            color: #fff;
+            padding: 9px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #303740;
+            color: var(--text);
             text-decoration: none;
-            cursor: pointer;
-            display: inline-block;
         }
-        .nav-item.active {
-            background-color: #59c3f7;
+        .nav-item:hover, .nav-item.active { background: var(--blue); color: #10202c; }
+        .welcome { color: var(--muted); text-align: center; }
+        .chat-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 470px;
+            padding: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+        .chat-records { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+        .welcome-message {
+            margin: auto;
+            max-width: 520px;
+            padding: 24px;
+            border: 1px solid #3b5265;
+            border-radius: 12px;
+            background: #1c2b36;
+            color: #dcebf5;
+            line-height: 1.8;
+        }
+        .welcome-message strong { color: var(--blue); }
+        .message { display: flex; }
+        .message.user { justify-content: flex-end; }
+        .bubble {
+            max-width: min(76%, 720px);
+            padding: 12px 15px;
+            border-radius: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+        .message.user .bubble { background: var(--blue-strong); border-bottom-right-radius: 3px; }
+        .message.assistant .bubble { background: #303740; border-bottom-left-radius: 3px; }
+        .message-label { display: block; margin-bottom: 3px; color: #c7d2dc; font-size: 0.78rem; }
+        .chat-form { display: flex; gap: 10px; margin-top: 22px; }
+        .chat-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: #111419;
+            color: var(--text);
+            font-size: 0.96rem;
+        }
+        button {
+            padding: 11px 18px;
+            border: 0;
+            border-radius: 7px;
+            background: var(--blue);
+            color: #10202c;
             font-weight: bold;
+            cursor: pointer;
         }
-        .nav-item:hover {
-            background-color: #666;
-        }
-        .nav-item.active:hover {
-            background-color: #59c3f7;
+        button:hover { filter: brightness(1.08); }
+        .clear-form { margin-top: 10px; text-align: right; }
+        .clear-form button { background: transparent; border: 1px solid var(--border); color: var(--muted); font-weight: normal; }
+        @media (max-width: 900px) { .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 560px) {
+            .page { width: min(100% - 20px, 1120px); padding-top: 16px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .chat-shell { padding: 14px; }
+            .chat-form { flex-direction: column; }
+            .chat-form button { width: 100%; }
+            .bubble { max-width: 88%; }
         }
     </style>
 </head>
 <body>
-    <div style="max-width: 980px; margin: 0 auto; padding: 24px 16px;">
-        <h1 class="hero-title">AI求职助手平台</h1>
-        <div class="hero-subtitle">基于大模型的求职分析与职业辅助平台。</div>
-        <div class="hero-card">
-            <div class="feature-grid">
-                <div class="feature-item">
-                    <h3>AI智能对话</h3>
-                    <p>实时对话式求职助手，支持问题解答与职业指导。</p>
-                </div>
-                <div class="feature-item">
-                    <h3>岗位JD分析</h3>
-                    <p>自动解析岗位需求，提取核心技能与学习建议。</p>
-                </div>
-                <div class="feature-item">
-                    <h3>简历上传分析</h3>
-                    <p>上传简历后生成整体评价、技术栈与优化建议。</p>
-                </div>
-                <div class="feature-item">
-                    <h3>简历JD匹配</h3>
-                    <p>简历与JD匹配打分，指出核心技能差距与投递建议。</p>
-                </div>
-                <div class="feature-item">
-                    <h3>分析历史记录</h3>
-                    <p>保存个人分析历史，可随时查看与删除。</p>
-                </div>
-            </div>
+<main class="page">
+    <section class="hero">
+        <h1>AI Job Agent</h1>
+        <p>AI-powered Resume Analysis &amp; Job Matching Platform</p>
+    </section>
+
+    <section class="feature-panel" aria-label="平台能力">
+        <div class="feature-grid">
+            <article class="feature-item"><h3>AI 智能聊天</h3><p>围绕求职、职业规划和面试准备进行对话。</p></article>
+            <article class="feature-item"><h3>岗位 JD 分析</h3><p>提取岗位核心要求、技能重点和学习方向。</p></article>
+            <article class="feature-item"><h3>简历分析</h3><p>上传 PDF 简历，获得技术栈和项目表达建议。</p></article>
+            <article class="feature-item"><h3>简历 JD 匹配</h3><p>对比简历与目标岗位，识别优势和能力差距。</p></article>
+            <article class="feature-item"><h3>历史记录</h3><p>集中查看、回顾和删除过往分析结果。</p></article>
         </div>
-    </div>
-    <h1>MJ AI助手</h1>
-    <div class="navbar">
-        <a href="/" class="nav-item active">AI聊天</a>
-        <a href="/jd" class="nav-item">岗位JD分析</a>
-        <a href="/resume" class="nav-item">简历上传分析</a>
-        <a href="/match" class="nav-item">简历JD匹配</a>
+    </section>
+
+    <nav class="navbar" aria-label="主导航">
+        <a href="/" class="nav-item active">AI 聊天</a>
+        <a href="/jd" class="nav-item">岗位 JD 分析</a>
+        <a href="/resume" class="nav-item">简历分析</a>
+        <a href="/match" class="nav-item">简历 JD 匹配</a>
         <a href="/history" class="nav-item">分析历史</a>
         <a href="/logout" class="nav-item">退出登录</a>
-    </div>
-    <hr>
+    </nav>
 
-    <div style="margin-bottom: 10px;">
-        <span>欢迎, {{ username }}</span>
-    </div>
-    <hr>
+    <p class="welcome">欢迎，{{ username }}</p>
+    <section class="section-heading">
+        <h2>AI 求职助手</h2>
+        <p>把问题交给 AI，把准备工作变成清晰的下一步。</p>
+    </section>
 
-   <div class="chat-box">
-
-    {% for msg in chat_history %}
-
-        <div class="user-msg">
-            你：{{ msg.user }}
+    <section class="chat-shell">
+        <div class="chat-records">
+            {% if chat_history %}
+                {% for msg in chat_history %}
+                <div class="message user"><div class="bubble"><span class="message-label">你</span>{{ msg.user }}</div></div>
+                <div class="message assistant"><div class="bubble"><span class="message-label">AI Job Agent</span>{{ msg.bot }}</div></div>
+                {% endfor %}
+            {% else %}
+                <div class="welcome-message">
+                    <strong>你好，我是 AI Job Agent。</strong><br>
+                    我可以帮助你：<br>
+                    - 分析岗位 JD<br>
+                    - 优化简历<br>
+                    - 准备面试
+                </div>
+            {% endif %}
         </div>
-
-        <div class="assistant-msg">
-            MJ：{{ msg.bot }}
-        </div>
-
-    {% endfor %}
-
-</div>
-
-    <form method="POST">
-        <input type="text" name="user_input" placeholder="请输入内容" onkeydown="if (event.key === 'Enter') this.form.submit();">
-        <button type="submit">发送</button>
-    </form>
-    <form method="POST" action="/clear" style="display:inline-block; margin-left: 10px;">
-        <button type="submit">清空聊天记录</button>
-    </form>
-    <script>
-        window.addEventListener('load', function() {
-            window.scrollTo(0, document.body.scrollHeight);
-        });
-    </script>
+        <form class="chat-form" method="POST">
+            <input type="text" name="user_input" placeholder="输入你的求职问题..." autocomplete="off" required>
+            <button type="submit">发送</button>
+        </form>
+        <form class="clear-form" method="POST" action="/clear">
+            <button type="submit">清空聊天记录</button>
+        </form>
+    </section>
+</main>
 </body>
 </html>

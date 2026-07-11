@@ -1,206 +1,94 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>简历JD匹配 - MJ的AI助手</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历 JD 匹配 - AI Job Agent</title>
     <style>
-        body {
-            text-align: center;
-            background-color: #1a1a1a;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
-        h1 { color: #59c3f7; }
-        .navbar {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px 0 15px 0;
-            flex-wrap: wrap;
-        }
-        .nav-item {
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: #444;
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-            display: inline-block;
-        }
-        .nav-item.active {
-            background-color: #59c3f7;
-            font-weight: bold;
-        }
-        .nav-item:hover {
-            background-color: #666;
-        }
-        .nav-item.active:hover {
-            background-color: #59c3f7;
-        }
-        form {
-            display: inline-block;
-            text-align: left;
-            width: 90%;
-            max-width: 800px;
-            margin-top: 20px;
-        }
-        input[type=file] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: none;
-            background-color: #222;
-            color: #fff;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: none;
-            resize: vertical;
-        }
-        button {
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: none;
-            background-color: #59c3f7;
-            color: #fff;
-            cursor: pointer;
-        }
-        .message {
-            color: #ffcc00;
-            margin-bottom: 10px;
-        }
-        .analysis {
-            width: 90%;
-            max-width: 800px;
-            text-align: left;
-            margin: 20px auto;
-            padding: 15px;
-            background-color: #222;
-            border-radius: 10px;
-            white-space: pre-wrap;
-        }
-        .analysis h2 {
-            color: #59c3f7;
-            margin-top: 0;
-        }
-        .score {
-            font-size: 32px;
-            font-weight: bold;
-            color: #59c3f7;
-            margin-bottom: 20px;
-        }
-        .analysis-section {
-            margin: 18px 0;
-        }
-        .analysis-section h3 {
-            color: #ddd;
-            margin-bottom: 8px;
-        }
-        .analysis-section ul {
-            margin-top: 0;
-            padding-left: 22px;
-        }
-        .greeting {
-            width: 100%;
-            min-height: 80px;
-            box-sizing: border-box;
-            padding: 10px;
-            background-color: #111;
-            color: #fff;
-            border: 1px solid #555;
-            border-radius: 5px;
-            resize: vertical;
-        }
+        :root { --bg: #15181d; --surface: #20252c; --surface-soft: #262c34; --border: #353d47; --text: #f4f7fb; --muted: #a9b2bf; --blue: #59c3f7; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: Arial, "Microsoft YaHei", sans-serif; }
+        .page { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 26px 0 50px; }
+        h1 { margin: 0 0 14px; color: var(--blue); text-align: center; }
+        .navbar { display: flex; justify-content: center; gap: 8px; margin: 16px 0 24px; flex-wrap: wrap; }
+        .nav-item { padding: 9px 16px; border: 1px solid var(--border); border-radius: 6px; background: #303740; color: var(--text); text-decoration: none; }
+        .nav-item:hover, .nav-item.active { background: var(--blue); color: #10202c; }
+        .welcome, .message { color: var(--muted); text-align: center; }
+        .message { min-height: 24px; color: #ffcc66; }
+        .match-form { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; margin-top: 18px; }
+        .input-panel, .analysis { padding: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+        .input-panel h2, .analysis h2 { margin: 0 0 18px; font-size: 1.15rem; }
+        label { display: block; margin: 16px 0 7px; color: #dbe3eb; font-size: .92rem; }
+        input[type=file], textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; background: #111419; color: var(--text); }
+        input[type=file] { padding: 12px; }
+        .upload-note { margin: 8px 0 0; color: var(--muted); font-size: .82rem; }
+        .jd-input { min-height: 220px; padding: 12px; resize: vertical; line-height: 1.5; }
+        .submit-row { margin-top: 20px; text-align: right; }
+        button { padding: 11px 18px; border: 0; border-radius: 7px; background: var(--blue); color: #10202c; font-weight: bold; cursor: pointer; }
+        .analysis { grid-column: 1 / -1; }
+        .score-card { display: flex; align-items: end; gap: 12px; margin-bottom: 18px; padding: 18px; border: 1px solid #3b5265; border-radius: 10px; background: #1c2b36; }
+        .score-label { color: var(--muted); }
+        .score { color: var(--blue); font-size: 2.5rem; font-weight: bold; line-height: 1; }
+        .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .result-card { min-height: 130px; padding: 16px; background: var(--surface-soft); border: 1px solid var(--border); border-radius: 10px; }
+        .result-card.full { grid-column: 1 / -1; }
+        .result-card h3 { margin: 0 0 10px; color: var(--blue); font-size: .98rem; }
+        .result-card p { margin: 0; color: #e7edf3; line-height: 1.6; white-space: pre-wrap; }
+        ul { margin: 0; padding-left: 20px; color: #e7edf3; line-height: 1.7; }
+        .greeting-wrap { position: relative; }
+        .greeting { min-height: 90px; padding: 12px; resize: vertical; line-height: 1.5; }
+        .copy-button { margin-top: 8px; background: transparent; border: 1px solid var(--blue); color: var(--blue); font-weight: normal; }
+        @media (max-width: 760px) { .match-form, .result-grid { grid-template-columns: 1fr; } .result-card.full { grid-column: auto; } }
     </style>
 </head>
 <body>
-    <h1>简历JD匹配</h1>
-    <div class="navbar">
-        <a href="/" class="nav-item">AI聊天</a>
-        <a href="/jd" class="nav-item">岗位JD分析</a>
-        <a href="/resume" class="nav-item">简历上传分析</a>
-        <a href="/match" class="nav-item active">简历JD匹配</a>
+<main class="page">
+    <h1>简历 JD 匹配</h1>
+    <nav class="navbar" aria-label="主导航">
+        <a href="/" class="nav-item">AI 聊天</a>
+        <a href="/jd" class="nav-item">岗位 JD 分析</a>
+        <a href="/resume" class="nav-item">简历分析</a>
+        <a href="/match" class="nav-item active">简历 JD 匹配</a>
         <a href="/history" class="nav-item">分析历史</a>
         <a href="/logout" class="nav-item">退出登录</a>
-    </div>
-    <div style="margin-bottom: 10px;">
-        <span>欢迎, {{ username }}</span>
-    </div>
-    <hr>
+    </nav>
+    <p class="welcome">欢迎，{{ username }}</p>
     <div class="message">{{ error or '' }}</div>
-    <form method="POST" enctype="multipart/form-data">
-        <label>上传简历 PDF</label>
-        <input type="file" name="resume_file" accept="application/pdf" required>
-        
-        <label>岗位 JD 描述</label>
-        <textarea name="jd_text" placeholder="请粘贴岗位 JD 描述" required></textarea>
-        
-        <button type="submit">开始匹配分析</button>
+
+    <form class="match-form" method="POST" enctype="multipart/form-data">
+        <section class="input-panel">
+            <h2>输入分析材料</h2>
+            <label for="resume_file">上传简历</label>
+            <input id="resume_file" type="file" name="resume_file" accept="application/pdf" required>
+            <p class="upload-note">支持 PDF 格式，请上传包含完整项目经历的简历。</p>
+            <label for="jd_text">岗位 JD</label>
+            <textarea id="jd_text" class="jd-input" name="jd_text" placeholder="请输入完整岗位 JD。建议包含岗位职责、任职要求和技术栈。" required></textarea>
+            <div class="submit-row"><button type="submit">开始匹配分析</button></div>
+        </section>
+
+        {% if analysis %}
+        <section class="analysis" aria-label="岗位匹配结果">
+            <h2>分析结果</h2>
+            <div class="score-card"><span class="score-label">综合匹配度</span><span class="score">{{ analysis.match_score }}<small> / 100</small></span></div>
+            <div class="result-grid">
+                <article class="result-card full"><h3>岗位匹配结论</h3><p>{{ analysis.summary }}</p></article>
+                <article class="result-card"><h3>核心优势</h3><ul>{% for item in analysis.strengths %}<li>{{ item }}</li>{% else %}<li>暂无明确优势</li>{% endfor %}</ul></article>
+                <article class="result-card"><h3>主要短板</h3><ul>{% for item in analysis.weaknesses %}<li>{{ item }}</li>{% else %}<li>暂无明确短板</li>{% endfor %}</ul></article>
+                <article class="result-card"><h3>简历建议</h3><ul>{% for item in analysis.resume_suggestions %}<li>{{ item }}</li>{% else %}<li>暂无简历建议</li>{% endfor %}</ul></article>
+                <article class="result-card"><h3>面试建议</h3><ul>{% for item in analysis.interview_suggestions %}<li>{{ item }}</li>{% else %}<li>暂无面试建议</li>{% endfor %}</ul></article>
+                <article class="result-card full"><h3>招聘平台打招呼语</h3><div class="greeting-wrap"><textarea id="greeting-text" class="greeting" readonly>{{ analysis.greeting_message }}</textarea><button type="button" class="copy-button" onclick="copyGreeting()">复制招呼语</button></div></article>
+            </div>
+        </section>
+        {% endif %}
     </form>
-
-    {% if analysis %}
-    <div class="analysis">
-        <h2>岗位匹配分析</h2>
-        <div class="score">综合匹配度：{{ analysis.match_score }} / 100</div>
-
-        <div class="analysis-section">
-            <h3>岗位匹配结论</h3>
-            <div>{{ analysis.summary }}</div>
-        </div>
-
-        <div class="analysis-section">
-            <h3>我的核心优势</h3>
-            <ul>
-                {% for item in analysis.strengths %}
-                <li>{{ item }}</li>
-                {% else %}
-                <li>暂无明确优势信息</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="analysis-section">
-            <h3>当前主要短板</h3>
-            <ul>
-                {% for item in analysis.weaknesses %}
-                <li>{{ item }}</li>
-                {% else %}
-                <li>暂无明确短板信息</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="analysis-section">
-            <h3>简历修改建议</h3>
-            <ul>
-                {% for item in analysis.resume_suggestions %}
-                <li>{{ item }}</li>
-                {% else %}
-                <li>暂无简历修改建议</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="analysis-section">
-            <h3>面试准备建议</h3>
-            <ul>
-                {% for item in analysis.interview_suggestions %}
-                <li>{{ item }}</li>
-                {% else %}
-                <li>暂无面试准备建议</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="analysis-section">
-            <h3>招聘平台打招呼语</h3>
-            <textarea class="greeting" readonly>{{ analysis.greeting_message }}</textarea>
-        </div>
-    </div>
-    {% endif %}
+</main>
+<script>
+function copyGreeting() {
+    const text = document.getElementById('greeting-text').value;
+    navigator.clipboard.writeText(text).then(function () {
+        document.querySelector('.copy-button').textContent = '已复制';
+    });
+}
+</script>
 </body>
 </html>

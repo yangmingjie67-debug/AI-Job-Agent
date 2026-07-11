@@ -4,13 +4,21 @@
 
 ## 项目截图
 
+### 首页
+
 ![首页](images/home.png)
 
-![聊天](images/chat.png)
+### AI 聊天
 
-![岗位分析](images/match.png)
+![AI聊天](images/chat.png)
 
-![历史记录](images/history.png)
+### 简历 JD 匹配
+
+![简历JD匹配](images/match.png)
+
+### 分析历史
+
+![分析历史](images/history.png)
 
 请将对应页面截图放入 `images` 目录。
 

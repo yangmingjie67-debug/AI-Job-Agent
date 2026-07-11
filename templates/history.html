@@ -1,114 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>分析历史 - MJ的AI助手</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析历史 - AI Job Agent</title>
     <style>
-        body {
-            text-align: center;
-            background-color: #1a1a1a;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
-        h1 { color: #59c3f7; }
-        .navbar {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px 0 15px 0;
-            flex-wrap: wrap;
-        }
-        .nav-item {
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: #444;
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-            display: inline-block;
-        }
-        .nav-item.active {
-            background-color: #59c3f7;
-            font-weight: bold;
-        }
-        .nav-item:hover {
-            background-color: #666;
-        }
-        .nav-item.active:hover {
-            background-color: #59c3f7;
-        }
-        .history-list {
-            width: 90%;
-            max-width: 900px;
-            margin: 0 auto;
-            text-align: left;
-        }
-        .history-item {
-            background-color: #222;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px 0;
-        }
-        .history-meta {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .history-meta span {
-            color: #ccc;
-        }
-        .history-summary {
-            color: #fff;
-            margin-bottom: 10px;
-        }
-        .history-result {
-            background-color: #111;
-            padding: 12px;
-            border-radius: 8px;
-            white-space: pre-wrap;
-        }
-        .delete-form {
-            display: inline-block;
-        }
-        .delete-form button {
-            background-color: #d9534f;
-        }
+        :root { --bg: #15181d; --surface: #20252c; --surface-soft: #262c34; --border: #353d47; --text: #f4f7fb; --muted: #a9b2bf; --blue: #59c3f7; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: Arial, "Microsoft YaHei", sans-serif; }
+        .page { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 26px 0 50px; }
+        h1 { margin: 0 0 14px; color: var(--blue); text-align: center; }
+        .navbar { display: flex; justify-content: center; gap: 8px; margin: 16px 0 24px; flex-wrap: wrap; }
+        .nav-item { padding: 9px 16px; border: 1px solid var(--border); border-radius: 6px; background: #303740; color: var(--text); text-decoration: none; }
+        .nav-item:hover, .nav-item.active { background: var(--blue); color: #10202c; }
+        .welcome { color: var(--muted); text-align: center; }
+        .history-list { display: grid; gap: 14px; margin-top: 24px; }
+        .history-item { padding: 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+        .history-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .history-type { color: var(--blue); font-size: 1.05rem; font-weight: bold; }
+        .history-time { color: var(--muted); font-size: .85rem; }
+        .history-summary { margin: 12px 0; color: #e4ebf2; line-height: 1.5; }
+        .history-score { display: inline-block; padding: 5px 9px; border: 1px solid #3b5265; border-radius: 5px; color: var(--blue); font-weight: bold; }
+        .history-actions { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+        .details-toggle, .delete-button { padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: .88rem; }
+        .details-toggle { border: 1px solid var(--blue); background: transparent; color: var(--blue); }
+        .delete-button { border: 1px solid #a94b4b; background: transparent; color: #ff9b9b; }
+        .history-details { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .history-details.open { display: block; }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .detail-card { padding: 14px; background: var(--surface-soft); border-radius: 8px; }
+        .detail-card.full { grid-column: 1 / -1; }
+        .detail-card h3 { margin: 0 0 8px; color: var(--blue); font-size: .92rem; }
+        .detail-card p { margin: 0; line-height: 1.55; white-space: pre-wrap; }
+        .detail-card ul { margin: 0; padding-left: 20px; line-height: 1.6; }
+        .raw-result { display: none; margin: 0; white-space: pre-wrap; color: #e4ebf2; }
+        .empty { padding: 34px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--muted); text-align: center; }
+        @media (max-width: 650px) { .history-head, .detail-grid { grid-template-columns: 1fr; display: grid; } .detail-card.full { grid-column: auto; } }
     </style>
 </head>
 <body>
+<main class="page">
     <h1>分析历史</h1>
-    <div class="navbar">
-        <a href="/" class="nav-item">AI聊天</a>
-        <a href="/jd" class="nav-item">岗位JD分析</a>
-        <a href="/resume" class="nav-item">简历上传分析</a>
-        <a href="/match" class="nav-item">简历JD匹配</a>
+    <nav class="navbar" aria-label="主导航">
+        <a href="/" class="nav-item">AI 聊天</a>
+        <a href="/jd" class="nav-item">岗位 JD 分析</a>
+        <a href="/resume" class="nav-item">简历分析</a>
+        <a href="/match" class="nav-item">简历 JD 匹配</a>
         <a href="/history" class="nav-item active">分析历史</a>
         <a href="/logout" class="nav-item">退出登录</a>
-    </div>
-    <div style="margin-bottom: 10px;">
-        <span>欢迎, {{ username }}</span>
-    </div>
-    <hr>
-    <div class="history-list">
+    </nav>
+    <p class="welcome">欢迎，{{ username }}</p>
+
+    <section class="history-list">
         {% if records %}
             {% for record in records %}
-            <div class="history-item">
-                <div class="history-meta">
-                    <span>类型：{{ record.analysis_type }}</span>
-                    <span>时间：{{ record.created_at }}</span>
-                    <form class="delete-form" method="POST" action="/history/delete">
+            <article class="history-item">
+                <div class="history-head">
+                    <div>
+                        <div class="history-type">{{ record.analysis_type }}</div>
+                        <div class="history-time">{{ record.created_at }}</div>
+                    </div>
+                    <span class="history-score score-value">匹配度读取中</span>
+                </div>
+                <div class="history-summary"><strong>输入摘要：</strong>{{ record.input_summary }}</div>
+                <div class="history-actions">
+                    <button type="button" class="details-toggle" onclick="toggleDetails(this)">查看详情</button>
+                    <form method="POST" action="/history/delete">
                         <input type="hidden" name="history_id" value="{{ record.id }}">
-                        <button type="submit">删除</button>
+                        <button type="submit" class="delete-button">删除</button>
                     </form>
                 </div>
-                <div class="history-summary">输入摘要：{{ record.input_summary }}</div>
-                <div class="history-result">{{ record.result }}</div>
-            </div>
+                <div class="history-details">
+                    <div class="detail-grid">
+                        <article class="detail-card full"><h3>岗位匹配结论</h3><p class="summary-value"></p></article>
+                        <article class="detail-card"><h3>核心优势</h3><ul class="strengths-value"></ul></article>
+                        <article class="detail-card"><h3>主要短板</h3><ul class="weaknesses-value"></ul></article>
+                        <article class="detail-card"><h3>建议</h3><ul class="suggestions-value"></ul></article>
+                        <article class="detail-card"><h3>打招呼语</h3><p class="greeting-value"></p></article>
+                        <article class="detail-card full"><pre class="raw-result"></pre></article>
+                    </div>
+                </div>
+                <script>
+                (function () {
+                    const raw = {{ record.result|tojson }};
+                    const item = document.currentScript.parentElement;
+                    const score = item.querySelector('.score-value');
+                    const details = item.querySelector('.history-details');
+                    try {
+                        const data = JSON.parse(raw);
+                        score.textContent = '匹配度 ' + (data.match_score ?? 0) + ' / 100';
+                        item.querySelector('.summary-value').textContent = data.summary || '暂无结论';
+                        item.querySelector('.greeting-value').textContent = data.greeting_message || '暂无打招呼语';
+                        fillList(item.querySelector('.strengths-value'), data.strengths);
+                        fillList(item.querySelector('.weaknesses-value'), data.weaknesses);
+                        fillList(item.querySelector('.suggestions-value'), [].concat(data.resume_suggestions || [], data.interview_suggestions || []));
+                    } catch (error) {
+                        score.textContent = '旧格式记录';
+                        item.querySelector('.raw-result').textContent = raw;
+                    }
+                    function fillList(element, values) {
+                        (Array.isArray(values) ? values : []).forEach(function (value) {
+                            const li = document.createElement('li');
+                            li.textContent = value;
+                            element.appendChild(li);
+                        });
+                        if (!element.children.length) element.innerHTML = '<li>暂无记录</li>';
+                    }
+                })();
+                </script>
+            </article>
             {% endfor %}
         {% else %}
-            <div class="history-item">暂无分析历史。</div>
+            <div class="empty">暂无分析历史，完成一次岗位分析后会显示在这里。</div>
         {% endif %}
-    </div>
+    </section>
+</main>
+<script>
+function toggleDetails(button) {
+    const details = button.closest('.history-item').querySelector('.history-details');
+    details.classList.toggle('open');
+    button.textContent = details.classList.contains('open') ? '收起详情' : '查看详情';
+}
+</script>
 </body>
 </html>
