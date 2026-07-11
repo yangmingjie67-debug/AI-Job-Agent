@@ -3,10 +3,13 @@ nenv/
 __pycache__/
 **pycache**/
 *.pyc
+*.pyo
 *.db
 instance/
+.vscode/
 mj_ai.db
 ngrok.exe
+app_backup.py
 .env
 uploads/
 .DS_Store
