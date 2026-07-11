@@ -83,6 +83,38 @@
             border-radius: 10px;
             white-space: pre-wrap;
         }
+        .analysis h2 {
+            color: #59c3f7;
+            margin-top: 0;
+        }
+        .score {
+            font-size: 32px;
+            font-weight: bold;
+            color: #59c3f7;
+            margin-bottom: 20px;
+        }
+        .analysis-section {
+            margin: 18px 0;
+        }
+        .analysis-section h3 {
+            color: #ddd;
+            margin-bottom: 8px;
+        }
+        .analysis-section ul {
+            margin-top: 0;
+            padding-left: 22px;
+        }
+        .greeting {
+            width: 100%;
+            min-height: 80px;
+            box-sizing: border-box;
+            padding: 10px;
+            background-color: #111;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 5px;
+            resize: vertical;
+        }
     </style>
 </head>
 <body>
@@ -112,7 +144,62 @@
 
     {% if analysis %}
     <div class="analysis">
-        {{ analysis }}
+        <h2>岗位匹配分析</h2>
+        <div class="score">综合匹配度：{{ analysis.match_score }} / 100</div>
+
+        <div class="analysis-section">
+            <h3>岗位匹配结论</h3>
+            <div>{{ analysis.summary }}</div>
+        </div>
+
+        <div class="analysis-section">
+            <h3>我的核心优势</h3>
+            <ul>
+                {% for item in analysis.strengths %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>暂无明确优势信息</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="analysis-section">
+            <h3>当前主要短板</h3>
+            <ul>
+                {% for item in analysis.weaknesses %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>暂无明确短板信息</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="analysis-section">
+            <h3>简历修改建议</h3>
+            <ul>
+                {% for item in analysis.resume_suggestions %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>暂无简历修改建议</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="analysis-section">
+            <h3>面试准备建议</h3>
+            <ul>
+                {% for item in analysis.interview_suggestions %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>暂无面试准备建议</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="analysis-section">
+            <h3>招聘平台打招呼语</h3>
+            <textarea class="greeting" readonly>{{ analysis.greeting_message }}</textarea>
+        </div>
     </div>
     {% endif %}
 </body>

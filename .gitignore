@@ -1,7 +1,10 @@
 venv/
 nenv/
 __pycache__/
+**pycache**/
 *.pyc
+*.db
+instance/
 mj_ai.db
 ngrok.exe
 .env
