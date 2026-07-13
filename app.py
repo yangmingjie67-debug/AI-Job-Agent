@@ -1,7 +1,11 @@
 import json
+import logging
 import os
 
 from dotenv import load_dotenv
+
+load_dotenv()
+
 from flask import Flask, request, render_template, redirect, session
 from pypdf import PdfReader
 from database import (
@@ -20,11 +24,23 @@ from services.job_analysis_service import analyze_job_match
 from routes.rag_routes import rag_bp
 from routes.agent_routes import agent_bp
 
-load_dotenv()
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO").upper())
+logger = logging.getLogger(__name__)
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-only-change-me")
+app.secret_key = os.getenv("FLASK_SECRET_KEY") or "dev-only-change-me"
+if not os.getenv("FLASK_SECRET_KEY"):
+    logger.warning("FLASK_SECRET_KEY is not set; using the development fallback.")
 app.register_blueprint(rag_bp)
 app.register_blueprint(agent_bp)
+
+# Production starts with `gunicorn app:app`, so __main__ is not executed.
+init_db()
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(error):
+    logger.exception("Unhandled exception while handling %s %s", request.method, request.path)
+    raise error
 
 def summarize_input(text, length=120):
     summary = text.replace("\n", " ").strip()
@@ -229,11 +245,14 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
+        logger.info("Login attempt for username=%r", username)
         user = get_user_by_username(username)
         if user and user["password"] == password:
+            logger.info("Login succeeded for username=%r", username)
             session["user_id"] = user["id"]
             session["username"] = user["username"]
             return redirect("/")
+        logger.info("Login rejected for username=%r", username)
         error = "用户名或密码错误"
 
     return render_template("login.html", error=error)
@@ -275,5 +294,4 @@ def knowledge_chat():
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)

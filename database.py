@@ -1,11 +1,20 @@
+import os
 import sqlite3
+from pathlib import Path
 
 
-DB_NAME = "mj_ai.db"
+DB_NAME = os.getenv("DATABASE_PATH", str(Path(__file__).resolve().parent / "mj_ai.db"))
+
+
+def get_connection():
+    """Open the configured SQLite database and create its parent directory."""
+    db_path = Path(DB_NAME)
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    return sqlite3.connect(db_path)
 
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -47,7 +56,7 @@ def init_db():
 
 
 def save_message(user_message, bot_message, user_id):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -60,7 +69,7 @@ def save_message(user_message, bot_message, user_id):
 
 
 def clear_messages(user_id):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM messages WHERE user_id = ?", (user_id,))
     conn.commit()
@@ -68,7 +77,7 @@ def clear_messages(user_id):
 
 
 def get_messages(user_id):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -93,7 +102,7 @@ def get_messages(user_id):
 
 
 def get_user_by_username(username):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id, username, password FROM users WHERE username = ?", (username,))
     row = cursor.fetchone()
@@ -102,7 +111,7 @@ def get_user_by_username(username):
 
 
 def create_user(username, password):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO users (username, password) VALUES (?, ?)",
@@ -115,7 +124,7 @@ def create_user(username, password):
 
 
 def save_history(user_id, analysis_type, input_summary, result):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO analysis_history (user_id, analysis_type, input_summary, result) VALUES (?, ?, ?, ?)",
@@ -126,7 +135,7 @@ def save_history(user_id, analysis_type, input_summary, result):
 
 
 def get_history(user_id):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         "SELECT id, analysis_type, input_summary, result, created_at FROM analysis_history WHERE user_id = ? ORDER BY id DESC",
@@ -147,7 +156,7 @@ def get_history(user_id):
 
 
 def delete_history_record(history_id, user_id):
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
         "DELETE FROM analysis_history WHERE id = ? AND user_id = ?",
