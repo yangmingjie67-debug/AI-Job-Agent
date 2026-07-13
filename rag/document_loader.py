@@ -22,7 +22,7 @@ def _record(text: str, source: Path, page: int | None, file_type: str) -> dict[s
     """统一生成文档记录，保留后续切块和检索需要的元数据。"""
     return {
         "text": text.strip(),
-        "source": source.as_posix(),
+        "source": source.name,
         "page": page,
         "file_type": file_type,
     }

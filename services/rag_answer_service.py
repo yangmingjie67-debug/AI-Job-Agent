@@ -14,7 +14,7 @@ from services.deepseek_service import chat_completion
 logger = logging.getLogger(__name__)
 NO_KNOWLEDGE_MESSAGE = "知识库暂无相关内容。"
 # Chroma 会始终返回 top_k，使用距离阈值识别确实不相关的问题。
-MAX_RELEVANCE_DISTANCE = 1.65
+MAX_RELEVANCE_DISTANCE = 1.80
 
 
 def _safe_source(source: Any) -> str:
@@ -53,6 +53,13 @@ def answer_query(query: str, top_k: int = 3) -> dict[str, Any]:
 
     try:
         retrieved_results = search(normalized_query, top_k=top_k)
+        logger.info(
+            "RAG retrieval query=%r result_count=%d distances=%s metadata=%s",
+            normalized_query,
+            len(retrieved_results),
+            [result.get("distance") for result in retrieved_results],
+            [result.get("metadata") for result in retrieved_results],
+        )
         results = [
             result for result in retrieved_results
             if float(result.get("distance", float("inf"))) <= MAX_RELEVANCE_DISTANCE

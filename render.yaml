@@ -5,3 +5,20 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: DATABASE_PATH
+        value: /var/data/mj_ai.db
+      - key: KNOWLEDGE_BASE_DIRECTORY
+        value: /var/data/documents
+      - key: CHROMA_PERSIST_DIRECTORY
+        value: /var/data/chroma_db
+      - key: CHROMA_COLLECTION_NAME
+        value: job_agent_knowledge
+      - key: FLASK_SECRET_KEY
+        sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
+    disk:
+      name: ai-job-agent-data
+      mountPath: /var/data
+      sizeGB: 1

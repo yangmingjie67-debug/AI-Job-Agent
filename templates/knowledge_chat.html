@@ -185,7 +185,8 @@
                 name.textContent = file.stored_filename;
                 const meta = document.createElement('div');
                 meta.className = 'file-meta';
-                meta.textContent = file.file_type.toUpperCase() + ' · ' + formatSize(file.size_bytes);
+                meta.textContent = file.file_type.toUpperCase() + ' · ' + formatSize(file.size_bytes) +
+                    (file.indexed ? ' · 已入库 ' + file.indexed_chunks + ' 个 chunks' : ' · 尚未入库');
                 info.appendChild(name);
                 info.appendChild(meta);
                 const removeButton = document.createElement('button');

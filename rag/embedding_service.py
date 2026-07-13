@@ -29,7 +29,9 @@ def encode_texts(texts: list[str]) -> list[list[float]]:
     if not texts or any(not str(text).strip() for text in texts):
         raise ValueError("Embedding 输入不能为空")
     # Chroma 默认实现可能返回 numpy.float32，持久化前统一转换为 Python float。
-    return [[float(value) for value in vector] for vector in get_embedding_function()(texts)]
+    vectors = [[float(value) for value in vector] for vector in get_embedding_function()(texts)]
+    logger.info("Embedding generated input_count=%d dimensions=%d", len(texts), len(vectors[0]) if vectors else 0)
+    return vectors
 
 
 def encode_query(query: str) -> list[float]:

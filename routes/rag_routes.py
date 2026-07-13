@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -12,14 +13,16 @@ from flask import Blueprint, jsonify, request
 
 from rag.document_loader import SUPPORTED_SUFFIXES, load_file
 from rag.rag_service import get_collection_count, ingest_directory, search
-from rag.vector_store import reset_collection
+from rag.vector_store import get_default_store, reset_collection
 from services.rag_answer_service import answer_query
 
 
 logger = logging.getLogger(__name__)
 rag_bp = Blueprint("rag", __name__, url_prefix="/api/rag")
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DOCUMENT_DIRECTORY = PROJECT_ROOT / "knowledge_base" / "documents"
+DEFAULT_DOCUMENT_DIRECTORY = Path(
+    os.getenv("KNOWLEDGE_BASE_DIRECTORY", str(PROJECT_ROOT / "knowledge_base" / "documents"))
+)
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"|?*')
 
 
@@ -86,6 +89,8 @@ def _list_knowledge_files() -> list[dict[str, Any]]:
             "file_type": path.suffix.lower().lstrip("."),
             "size_bytes": int(stat.st_size),
             "modified_time": datetime.fromtimestamp(stat.st_mtime).isoformat(timespec="seconds"),
+            "indexed_chunks": get_default_store().source_count(path.name),
+            "indexed": get_default_store().source_count(path.name) > 0,
             "_mtime": stat.st_mtime,
         })
     files.sort(key=lambda item: item["_mtime"], reverse=True)
