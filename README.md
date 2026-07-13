@@ -77,7 +77,7 @@ AI Job Agent 的主界面，可快速进入 AI 聊天、简历解析、岗位分
 ## 🏗 System Architecture
 
 ```mermaid
-flowchart TD
+graph TD
     A[Browser] --> B[Flask Application]
     B --> C[Planner Agent]
     C --> D[Tool Executor]
@@ -106,7 +106,7 @@ flowchart TD
 ## Resume Matching Workflow
 
 ```mermaid
-flowchart TD
+graph TD
     A[User] --> B[Upload Resume]
     B --> C[Extract PDF]
     C --> D[Analyze JD]
@@ -120,7 +120,7 @@ flowchart TD
 ## Knowledge Base Workflow (RAG)
 
 ```mermaid
-flowchart TD
+graph TD
     A[User Question] --> B[Search ChromaDB]
     B --> C[Retrieve Chunks]
     C --> D[Build Prompt]
@@ -134,7 +134,7 @@ flowchart TD
 ## Planner Agent Workflow
 
 ```mermaid
-flowchart TD
+graph TD
     A[User Task] --> B[Planner]
     B --> C[Generate Plan]
     C --> D[Tool Executor]
