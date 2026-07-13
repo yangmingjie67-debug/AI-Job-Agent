@@ -1,5 +1,7 @@
 import json
+import os
 
+from dotenv import load_dotenv
 from flask import Flask, request, render_template, redirect, session
 from pypdf import PdfReader
 from database import (
@@ -15,9 +17,14 @@ from database import (
 )
 from services.deepseek_service import chat_completion
 from services.job_analysis_service import analyze_job_match
+from routes.rag_routes import rag_bp
+from routes.agent_routes import agent_bp
 
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = "replace-with-a-secret-key"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-only-change-me")
+app.register_blueprint(rag_bp)
+app.register_blueprint(agent_bp)
 
 def summarize_input(text, length=120):
     summary = text.replace("\n", " ").strip()
@@ -258,6 +265,13 @@ def register():
 def logout():
     session.clear()
     return redirect("/login")
+
+
+@app.route("/knowledge-chat")
+def knowledge_chat():
+    if "user_id" not in session:
+        return redirect("/login")
+    return render_template("knowledge_chat.html", username=session.get("username"))
 
 
 if __name__ == "__main__":

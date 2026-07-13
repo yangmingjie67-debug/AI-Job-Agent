@@ -1,132 +1,339 @@
-# AI Job Agent
+# 🚀 AI Job Agent
 
-基于 Python、Flask 和 DeepSeek API 的 AI 求职助手，帮助求职者分析简历、理解岗位要求并提升投递准备效率。
+An open-source Flask application that combines DeepSeek, RAG, and Planner Agent workflows for practical AI-assisted job search tasks.
 
-## 项目截图
+AI Job Agent 是一个面向求职场景的 AI 应用，支持简历解析、岗位 JD 分析、简历匹配和面试准备。项目适用于 AI 应用开发实践、求职准备和岗位分析场景，并展示了从知识检索到多步骤工具编排的完整流程。
 
-### 首页
+[![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3776AB?style=flat-square&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![DeepSeek](https://img.shields.io/badge/DeepSeek-3776AB?style=flat-square&logoColor=white)](https://www.deepseek.com/)
+[![RAG](https://img.shields.io/badge/RAG-3776AB?style=flat-square&logoColor=white)](https://en.wikipedia.org/wiki/Knowledge_retrieval)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-3776AB?style=flat-square&logoColor=white)](https://www.trychroma.com/)
+[![Function Calling](https://img.shields.io/badge/Function%20Calling-3776AB?style=flat-square&logoColor=white)](#)
+[![Planner Agent](https://img.shields.io/badge/Planner%20Agent-3776AB?style=flat-square&logoColor=white)](#)
+[![Docker](https://img.shields.io/badge/Docker-3776AB?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Render](https://img.shields.io/badge/Render-3776AB?style=flat-square&logo=render&logoColor=white)](https://render.com/)
+[![MIT License](https://img.shields.io/badge/License-MIT-3776AB?style=flat-square&logoColor=white)](LICENSE)
 
-![首页](images/home.png)
+## ✨ Key Features
 
-### AI 聊天
+- ✅ AI Chat
+- ✅ Resume Parsing
+- ✅ JD Analysis
+- ✅ Resume Matching
+- ✅ Knowledge Base (RAG)
+- ✅ Function Calling
+- ✅ Planner Agent
+- ✅ Knowledge Upload
+- ✅ Docker Deployment
 
-![AI聊天](images/chat.png)
+## 💡 Project Highlights
 
-### 简历 JD 匹配
+- DeepSeek LLM Integration
+- Retrieval-Augmented Generation (RAG)
+- Planner Agent Multi-step Workflow
+- Function Calling & Tool Calling
+- Chroma Persistent Vector Database
+- Docker Deployment
 
-![简历JD匹配](images/match.png)
+## 📸 Project Preview
 
-### 分析历史
+### 🏠 Home Dashboard
 
-![分析历史](images/history.png)
+![Home](images/home.png)
 
-请将对应页面截图放入 `images` 目录。
+AI Job Agent 的主界面，可快速进入 AI 聊天、简历解析、岗位分析、知识库等功能。
 
-## 功能介绍
+### 💬 AI Chat
 
-- AI 智能聊天
-- PDF 简历上传与文本解析
-- 岗位 JD 分析
-- AI 简历岗位匹配
-- 综合匹配度评分
-- 核心优势分析
-- 当前短板分析
-- 简历优化建议
-- 面试准备建议
-- BOSS 招呼语生成
-- 分析历史记录管理
-- 用户登录与注册
+![AI Chat](images/chat.png)
 
-## 技术栈
+基于 DeepSeek 的智能聊天助手，支持自然语言问答。
 
-- Python
-- Flask
-- SQLite
-- DeepSeek API
-- OpenAI SDK
-- httpx
-- Jinja2
-- HTML / CSS
-- JavaScript（基础页面交互）
-- pypdf（PDF 文本解析）
+### 📄 Job Description Analysis
 
-## 项目结构
+![Job Description Analysis](images/jd.png)
+
+分析岗位 JD，提取技能要求、职责和匹配建议。
+
+### 🎯 Resume Matching
+
+![Resume Matching](images/match.png)
+
+自动分析简历与岗位 JD，输出匹配度、优势、短板和建议。
+
+### 📚 Knowledge Base (RAG)
+
+![Knowledge Base](images/knowledge.png)
+
+基于 ChromaDB 的知识库问答，支持来源引用和检索增强生成。
+
+### 📜 History
+
+![History](images/history.png)
+
+保存历史分析记录，方便查看和管理。
+
+## 🏗 System Architecture
+
+```mermaid
+flowchart TD
+    A[Browser] --> B[Flask Application]
+    B --> C[Planner Agent]
+    C --> D[Tool Executor]
+    D --> E[JD Analysis]
+    D --> F[Resume Matching]
+    D --> G[Knowledge Base RAG]
+    D --> H[AI Chat]
+    E --> I[DeepSeek API]
+    F --> I
+    G --> I
+    H --> I
+    G --> J[ChromaDB]
+```
+
+### Architecture Overview
+
+- Flask 负责 Web 服务和页面路由。
+- Planner Agent 负责拆解和规划用户任务。
+- Tool Executor 负责安全调用具体业务工具。
+- RAG 使用 ChromaDB 进行知识库向量检索。
+- DeepSeek 负责分析、问答和最终内容生成。
+- 各模块保持解耦，便于扩展新的工具和能力。
+
+# 🔄 Workflow
+
+## Resume Matching Workflow
+
+```mermaid
+flowchart TD
+    A[User] --> B[Upload Resume]
+    B --> C[Extract PDF]
+    C --> D[Analyze JD]
+    D --> E[Match Resume]
+    E --> F[DeepSeek]
+    F --> G[Result]
+```
+
+用户上传 PDF 简历并提交岗位 JD 后触发该流程。系统先提取简历文本，再结合 DeepSeek 输出匹配结果和针对性建议。
+
+## Knowledge Base Workflow (RAG)
+
+```mermaid
+flowchart TD
+    A[User Question] --> B[Search ChromaDB]
+    B --> C[Retrieve Chunks]
+    C --> D[Build Prompt]
+    D --> E[DeepSeek]
+    E --> F[Answer]
+    F --> G[Source Citation]
+```
+
+用户提出知识库问题时触发该流程。系统先检索相关文本，再让 DeepSeek 基于检索上下文回答并保留来源引用。
+
+## Planner Agent Workflow
+
+```mermaid
+flowchart TD
+    A[User Task] --> B[Planner]
+    B --> C[Generate Plan]
+    C --> D[Tool Executor]
+    D --> E[Tool 1]
+    E --> F[Tool 2]
+    F --> G[Tool 3]
+    G --> H[Merge Result]
+    H --> I[Final Response]
+```
+
+当用户一次提出多个关联任务时触发 Planner Agent。系统按计划依次调用工具，汇总真实执行结果后生成最终响应。
+
+# ⭐ Core Features
+
+| Feature | Description |
+| --- | --- |
+| AI Chat | 基于 DeepSeek 提供自然语言交互，支持日常求职问题咨询。 |
+| Resume Parsing | 支持 PDF 简历解析和文本提取，为后续分析提供结构化输入。 |
+| Job Description Analysis | 分析岗位 JD 中的技能、职责和要求，帮助明确岗位重点。 |
+| Resume Matching | 自动分析简历与岗位的匹配情况，并生成优势、短板和改进建议。 |
+| Knowledge Base (RAG) | 基于 ChromaDB 检索知识，并在回答中提供来源引用。 |
+| Function Calling | 根据用户意图自动调用不同工具，连接知识库、JD 分析和简历匹配能力。 |
+| Planner Agent | 自动拆解复杂任务并执行多步骤工作流，再汇总真实执行结果。 |
+| Knowledge Management | 支持 PDF、DOCX、TXT 文档上传、删除和知识库文件管理。 |
+
+### Why AI Job Agent?
+
+- **Modular Architecture**：按应用、服务、路由、RAG 和 Agent 模块组织，便于维护和扩展。
+- **RAG**：先检索知识库内容，再生成回答，减少脱离项目资料的回答。
+- **Planner Agent**：将复合求职任务拆解为可执行步骤，适合多工具协作。
+- **Tool Calling**：通过明确的工具边界连接不同业务能力，保持执行过程可追踪。
+- **Easy Deployment**：提供 Render 配置和 Gunicorn 启动方式，便于部署演示。
+
+## 🛠 Technology Stack
+
+| Category | Technologies |
+| --- | --- |
+| Backend | Python, Flask, Jinja2 |
+| AI | DeepSeek API, OpenAI SDK, RAG, ChromaDB, Function Calling, Planner Agent |
+| Frontend | HTML, CSS, JavaScript |
+| Database | SQLite |
+| Document Processing | pypdf, python-docx |
+| Networking | httpx |
+| Deployment | Gunicorn, Render, Docker |
+
+### Design Principles
+
+- **Modular Design**：按应用、服务、路由、RAG 和 Agent 模块组织代码。
+- **Separation of Concerns**：将页面、业务服务、工具执行和数据访问分离。
+- **Retrieval-Augmented Generation**：先检索知识库内容，再结合上下文生成回答。
+- **Tool-based Architecture**：通过明确的工具边界扩展岗位分析、匹配和知识库能力。
+- **Easy Deployment**：使用 Gunicorn 和 Render 配置简化部署流程。
+
+## Project Structure
 
 ```text
-ai-chat-app/
-├── app.py                         # Flask 应用入口与路由
-├── database.py                    # SQLite 数据库操作
+AI-Job-Agent/
+├── agent/
+│   ├── agent_service.py
+│   ├── execution_context.py
+│   ├── planner_service.py
+│   ├── plan_models.py
+│   ├── tool_executor.py
+│   └── tool_registry.py
+├── rag/
+│   ├── document_loader.py
+│   ├── embedding_service.py
+│   ├── rag_service.py
+│   ├── text_splitter.py
+│   └── vector_store.py
+├── routes/
+│   ├── agent_routes.py
+│   └── rag_routes.py
+├── scripts/
+│   ├── ingest_documents.py
+│   └── test_rag_search.py
 ├── services/
-│   ├── __init__.py
-│   ├── deepseek_service.py        # DeepSeek 客户端与统一调用入口
-│   └── job_analysis_service.py    # 岗位匹配、JSON 解析与容错
-├── routes/                        # 后续路由模块化拆分预留
+│   ├── deepseek_service.py
+│   ├── job_analysis_service.py
+│   └── rag_answer_service.py
 ├── templates/
-│   ├── index.html                 # AI 聊天页
-│   ├── jd.html                    # JD 分析页
-│   ├── resume.html                # 简历分析页
-│   ├── match.html                 # 简历与 JD 匹配页
-│   ├── history.html               # 历史记录页
-│   ├── login.html                 # 登录页
-│   └── register.html              # 注册页
+│   ├── index.html
+│   ├── jd.html
+│   ├── resume.html
+│   ├── match.html
+│   ├── history.html
+│   ├── knowledge_chat.html
+│   ├── login.html
+│   └── register.html
+├── knowledge_base/
+│   └── documents/
+│       └── ai_job_agent_test.txt
+├── images/
+│   ├── home.png
+│   ├── chat.png
+│   ├── jd.png
+│   ├── match.png
+│   ├── knowledge.png
+│   └── history.png
+├── app.py
+├── database.py
 ├── requirements.txt
-├── render.yaml                    # Render 部署配置
-├── test_deepseek.py               # DeepSeek 连接诊断脚本
-├── .env                           # 本地 API 配置，不提交到 Git
+├── render.yaml
+├── LICENSE
 └── README.md
 ```
 
-本地 SQLite 数据库文件和虚拟环境目录不属于应用源码，也不会提交到 GitHub。
+## Quick Start
 
-## 快速运行
+### 1. Clone the repository
 
-### 1. 安装依赖
+```bash
+git clone https://github.com/yangmingjie67-debug/AI-Job-Agent.git
+cd AI-Job-Agent
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv nenv
+```
+
+Windows:
+
+```powershell
+nenv\Scripts\activate
+```
+
+macOS / Linux:
+
+```bash
+source nenv/bin/activate
+```
+
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. 配置 DeepSeek API Key
+### 4. Configure environment variables
 
-在项目根目录创建 `.env` 文件：
+Windows:
 
-```env
-DEEPSEEK_API_KEY=your_deepseek_api_key
+```powershell
+copy .env.example .env
 ```
 
-请勿将 `.env` 或真实 API Key 提交到仓库。
+macOS / Linux:
 
-### 3. 启动应用
+```bash
+cp .env.example .env
+```
+
+Then set `DEEPSEEK_API_KEY` and `FLASK_SECRET_KEY` in `.env`.
+
+### 5. Start the application
 
 ```bash
 python app.py
 ```
 
-浏览器访问：
+Open `http://127.0.0.1:5000` in your browser.
 
-```text
-http://127.0.0.1:5000
-```
+## ⚙️ Environment Variables
 
-## 项目亮点
+| Variable | Description | Required |
+| --- | --- | --- |
+| `DEEPSEEK_API_KEY` | API key used for DeepSeek model calls. | Yes |
+| `FLASK_SECRET_KEY` | Secret used to sign Flask sessions. | Yes in production |
 
-- **渐进式模块化**：在保留现有 Flask 应用结构的基础上，将数据库、DeepSeek 调用和岗位匹配逻辑拆分到独立模块。
-- **Service 分层**：通过 `deepseek_service.py` 和 `job_analysis_service.py` 隔离外部模型调用与岗位分析业务。
-- **Prompt Engineering**：围绕岗位要求、匹配技能、短板、简历优化和面试准备设计结构化分析提示词。
-- **JSON 结构化输出**：岗位匹配结果统一转换为结构化字段，便于页面展示和后续功能扩展。
-- **PDF 文本解析**：支持上传 PDF 简历并提取文本内容进行分析。
-- **AI 岗位匹配**：结合简历内容与岗位 JD，输出匹配度和针对性建议。
-- **异常处理**：对 API 连接异常、非标准 JSON 和无效分析结果提供日志记录与备用结果。
-- **容错设计**：对评分范围、列表字段和缺失字段进行统一归一化，降低模型输出不稳定对页面的影响。
+# 🗺 Roadmap
 
-## 后续计划
+## ✅ V1
 
-- 多份简历管理与版本对比
-- GitHub 登录
-- 多模型切换
-- Agent 自动求职流程
-- BOSS 等招聘平台 API 对接
+- AI Chat
+- Resume Parsing
+- JD Analysis
+- Resume Matching
+
+## ✅ V2
+
+- RAG
+- Knowledge Base
+- Function Calling
+- Planner Agent
+- Knowledge Upload
+- Multi-step Workflow
+
+## 🚧 V3
+
+- Memory
+- Browser Automation
+- Multi-Agent Collaboration
+- More LLM Providers
+- BOSS Workflow Automation
 
 ## License
 
-本项目目前主要用于个人学习、求职展示和 AI 应用开发实践。
+MIT License.
+
+This project is intended for learning, AI application development, and portfolio demonstration.

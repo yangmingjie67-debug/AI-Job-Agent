@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 知识库问答 - AI Job Agent</title>
+    <style>
+        :root { --bg: #15181d; --surface: #20252c; --surface-soft: #262c34; --border: #353d47; --text: #f4f7fb; --muted: #a9b2bf; --blue: #59c3f7; --blue-strong: #1677d2; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: Arial, "Microsoft YaHei", sans-serif; }
+        .page { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+        h1 { margin: 0; color: var(--blue); text-align: center; font-size: 2rem; }
+        .subtitle { max-width: 650px; margin: 10px auto 0; color: var(--muted); text-align: center; line-height: 1.7; }
+        .navbar { display: flex; justify-content: center; gap: 8px; margin: 18px 0 26px; flex-wrap: wrap; }
+        .nav-item { padding: 9px 16px; border: 1px solid var(--border); border-radius: 6px; background: #303740; color: var(--text); text-decoration: none; }
+        .nav-item:hover, .nav-item.active { background: var(--blue); color: #10202c; }
+        .welcome { color: var(--muted); text-align: center; }
+        .panel { padding: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+        .panel h2 { margin: 0 0 14px; font-size: 1.1rem; }
+        #query-input { width: 100%; min-height: 130px; padding: 13px; resize: vertical; border: 1px solid var(--border); border-radius: 8px; background: #111419; color: var(--text); font: inherit; line-height: 1.6; }
+        #query-input:focus { outline: 2px solid #3b5265; border-color: var(--blue); }
+        .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 14px; }
+        .hint { color: var(--muted); font-size: .85rem; }
+        button { padding: 11px 20px; border: 0; border-radius: 7px; background: var(--blue); color: #10202c; font-weight: bold; cursor: pointer; }
+        button:hover { filter: brightness(1.08); }
+        button:disabled { opacity: .6; cursor: wait; }
+        .loading { display: none; color: var(--blue); font-size: .9rem; }
+        .loading.visible { display: inline; }
+        .answer-panel { display: none; margin-top: 18px; }
+        .answer-panel.visible { display: block; }
+        .answer { margin: 0; color: #e7edf3; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .sources { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .sources h3 { margin: 0 0 9px; color: var(--blue); font-size: .95rem; }
+        .sources-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+        .source-item { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-soft); color: #dbe3eb; font-size: .86rem; }
+        .error { display: none; margin-top: 14px; color: #ffcc66; }
+        .error.visible { display: block; }
+        .examples { margin-top: 20px; }
+        .examples h2 { margin-bottom: 10px; }
+        .example-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .example-button { padding: 8px 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-weight: normal; cursor: pointer; }
+        .example-button:hover { border-color: var(--blue); color: var(--blue); filter: none; }
+        .management { margin-top: 20px; }
+        .upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        #file-input { min-width: 0; flex: 1; padding: 9px; border: 1px solid var(--border); border-radius: 7px; background: #111419; color: var(--muted); }
+        .upload-status { min-height: 22px; margin: 11px 0 0; color: var(--muted); font-size: .88rem; }
+        .upload-status.success { color: #8bd6a3; }
+        .upload-status.error { display: block; color: #ffcc66; }
+        .file-list { display: grid; gap: 9px; margin: 14px 0 0; padding: 0; list-style: none; }
+        .file-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-soft); }
+        .file-info { min-width: 0; }
+        .file-name { color: #e7edf3; overflow-wrap: anywhere; }
+        .file-meta { margin-top: 4px; color: var(--muted); font-size: .8rem; }
+        .delete-file { padding: 7px 11px; border: 1px solid #a94b4b; background: transparent; color: #ff9b9b; font-weight: normal; white-space: nowrap; }
+        .empty-files { color: var(--muted); font-size: .88rem; }
+        @media (max-width: 560px) { .page { width: min(100% - 20px, 920px); padding-top: 18px; } .form-footer { align-items: stretch; flex-direction: column; } .form-footer button { width: 100%; } .hint { order: 2; } }
+    </style>
+</head>
+<body>
+<main class="page">
+    <h1>AI 知识库问答</h1>
+    <p class="subtitle">基于 RAG（Retrieval-Augmented Generation）技术，回答来自知识库内容，不会凭空编造。</p>
+
+    <nav class="navbar" aria-label="主导航">
+        <a href="/" class="nav-item">AI 聊天</a>
+        <a href="/jd" class="nav-item">岗位 JD 分析</a>
+        <a href="/resume" class="nav-item">简历分析</a>
+        <a href="/match" class="nav-item">简历 JD 匹配</a>
+        <a href="/history" class="nav-item">分析历史</a>
+        <a href="/knowledge-chat" class="nav-item active">知识库问答</a>
+        <a href="/logout" class="nav-item">退出登录</a>
+    </nav>
+    <p class="welcome">欢迎，{{ username }}</p>
+
+    <section class="panel" aria-labelledby="question-title">
+        <h2 id="question-title">向知识库提问</h2>
+        <textarea id="query-input" placeholder="请输入你的问题……&#10;&#10;例如：&#10;什么是RAG？&#10;AI Job Agent如何匹配简历？&#10;FastAPI有什么作用？"></textarea>
+        <div class="form-footer">
+            <span class="hint">Enter 发送，Shift+Enter 换行</span>
+            <span id="loading" class="loading" aria-live="polite">回答中...</span>
+            <button id="send-button" type="button">发送</button>
+        </div>
+        <p id="error-message" class="error" role="alert"></p>
+    </section>
+
+    <section id="answer-panel" class="panel answer-panel" aria-live="polite">
+        <h2>AI回答</h2>
+        <p id="answer" class="answer"></p>
+        <div class="sources">
+            <h3>知识来源</h3>
+            <ul id="sources-list" class="sources-list"></ul>
+        </div>
+    </section>
+
+    <section class="panel management" aria-labelledby="management-title">
+        <h2 id="management-title">知识库管理</h2>
+        <div class="upload-row">
+            <input id="file-input" type="file" accept=".pdf,.docx,.txt,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+            <button id="upload-button" type="button">上传并入库</button>
+        </div>
+        <p class="hint">支持格式：PDF、DOCX、TXT</p>
+        <p id="upload-status" class="upload-status" aria-live="polite"></p>
+        <ul id="file-list" class="file-list" aria-live="polite"></ul>
+    </section>
+
+    <section class="panel examples" aria-labelledby="examples-title">
+        <h2 id="examples-title">示例问题</h2>
+        <div class="example-list">
+            <button type="button" class="example-button" data-question="什么是RAG？">什么是RAG？</button>
+            <button type="button" class="example-button" data-question="AI Job Agent 如何匹配简历？">AI Job Agent 如何匹配简历？</button>
+            <button type="button" class="example-button" data-question="FastAPI 有什么作用？">FastAPI 有什么作用？</button>
+            <button type="button" class="example-button" data-question="Chroma 是什么？">Chroma 是什么？</button>
+        </div>
+    </section>
+</main>
+<script>
+(function () {
+    const input = document.getElementById('query-input');
+    const sendButton = document.getElementById('send-button');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('error-message');
+    const answerPanel = document.getElementById('answer-panel');
+    const answer = document.getElementById('answer');
+    const sourcesList = document.getElementById('sources-list');
+    const fileInput = document.getElementById('file-input');
+    const uploadButton = document.getElementById('upload-button');
+    const uploadStatus = document.getElementById('upload-status');
+    const fileList = document.getElementById('file-list');
+
+    function setLoading(isLoading) {
+        sendButton.disabled = isLoading;
+        sendButton.textContent = isLoading ? '回答中...' : '发送';
+        loading.classList.toggle('visible', isLoading);
+    }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.toggle('visible', Boolean(message));
+    }
+
+    function renderSources(sources) {
+        sourcesList.innerHTML = '';
+        (Array.isArray(sources) ? sources : []).forEach(function (source) {
+            const item = document.createElement('li');
+            item.className = 'source-item';
+            item.textContent = '📄 ' + (source.file || '未知文件') + (source.page ? ' · 第' + source.page + '页' : '');
+            sourcesList.appendChild(item);
+        });
+        if (!sourcesList.children.length) {
+            const item = document.createElement('li');
+            item.className = 'source-item';
+            item.textContent = '暂无来源';
+            sourcesList.appendChild(item);
+        }
+    }
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function setUploadStatus(message, isError) {
+        uploadStatus.textContent = message || '';
+        uploadStatus.className = 'upload-status' + (message && isError ? ' error' : message ? ' success' : '');
+    }
+
+    async function loadFiles() {
+        try {
+            const response = await fetch('/api/rag/files');
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error('file list failed');
+            fileList.innerHTML = '';
+            if (!data.files.length) {
+                fileList.innerHTML = '<li class="empty-files">知识库暂无文件</li>';
+                return;
+            }
+            data.files.forEach(function (file) {
+                const item = document.createElement('li');
+                item.className = 'file-item';
+                const info = document.createElement('div');
+                info.className = 'file-info';
+                const name = document.createElement('div');
+                name.className = 'file-name';
+                name.textContent = file.stored_filename;
+                const meta = document.createElement('div');
+                meta.className = 'file-meta';
+                meta.textContent = file.file_type.toUpperCase() + ' · ' + formatSize(file.size_bytes);
+                info.appendChild(name);
+                info.appendChild(meta);
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'delete-file';
+                removeButton.textContent = '删除';
+                removeButton.addEventListener('click', function () { deleteFile(file.stored_filename); });
+                item.appendChild(info);
+                item.appendChild(removeButton);
+                fileList.appendChild(item);
+            });
+        } catch (error) {
+            setUploadStatus('文件列表加载失败，请稍后重试。', true);
+        }
+    }
+
+    async function uploadFile() {
+        const file = fileInput.files[0];
+        if (!file || uploadButton.disabled) {
+            setUploadStatus('请选择 PDF、DOCX 或 TXT 文件。', true);
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        uploadButton.disabled = true;
+        uploadButton.textContent = '上传中...';
+        setUploadStatus('正在上传并入库...', false);
+        try {
+            const response = await fetch('/api/rag/upload', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'upload failed');
+            setUploadStatus('已入库 ' + data.chunks_generated + ' 个文本块。', false);
+            fileInput.value = '';
+            await loadFiles();
+        } catch (error) {
+            setUploadStatus(error.message || '上传失败，请稍后重试。', true);
+        } finally {
+            uploadButton.disabled = false;
+            uploadButton.textContent = '上传并入库';
+        }
+    }
+
+    async function deleteFile(filename) {
+        if (!window.confirm('确定删除文件“' + filename + '”并重建知识库吗？')) return;
+        setUploadStatus('正在删除并重建知识库...', false);
+        try {
+            const response = await fetch('/api/rag/files/' + encodeURIComponent(filename), { method: 'DELETE' });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'delete failed');
+            setUploadStatus('文件已删除，知识库已重建。', false);
+            await loadFiles();
+        } catch (error) {
+            setUploadStatus(error.message || '删除失败，请稍后重试。', true);
+        }
+    }
+
+    async function askQuestion() {
+        const query = input.value.trim();
+        if (!query || sendButton.disabled) return;
+        showError('');
+        setLoading(true);
+        try {
+            const response = await fetch('/api/rag/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) throw new Error(data.error || 'request failed');
+            answer.textContent = data.answer || '知识库暂无相关内容。';
+            renderSources(data.sources);
+            answerPanel.classList.add('visible');
+            answerPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (error) {
+            showError('获取回答失败，请稍后重试。');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    sendButton.addEventListener('click', askQuestion);
+    uploadButton.addEventListener('click', uploadFile);
+    input.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            askQuestion();
+        }
+    });
+    document.querySelectorAll('.example-button').forEach(function (button) {
+        button.addEventListener('click', function () {
+            input.value = button.dataset.question;
+            input.focus();
+        });
+    });
+    loadFiles();
+})();
+</script>
+</body>
+</html>
